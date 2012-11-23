@@ -24,6 +24,7 @@ public class PreciseCallStateBroadcaster extends Handler {
 	private static final int PHONE_STATE_CHANGED = 1;
 	private Context mCtx;
 	private CallManager mCM;
+	private Connection mConnection;
 
 	PreciseCallStateBroadcaster(Context mContext, CallManager mCallManager) {
 		Log.v(TAG, "Registering");
@@ -45,17 +46,22 @@ public class PreciseCallStateBroadcaster extends Handler {
             	long callDuration = -1;
             	Call.State cstate = Call.State.IDLE;
         		Log.v(TAG, "Received PHONE_STATE_CHANGED");
+                Phone fgPhone = mCM.getFgPhone();
                 Phone.State state = mCM.getState();
                 Log.v(TAG, "onPhoneStateChanged: state = " + state);
                 if (state == Phone.State.OFFHOOK) {
                     Log.v(TAG, "onPhoneStateChanged: OFF HOOK");
 
-                    Phone fgPhone = mCM.getFgPhone();
-                    Call call = PhoneUtils.getCurrentCall(fgPhone);
-                    Connection c = PhoneUtils.getConnection(fgPhone, call);
+                    Call mCall = PhoneUtils.getCurrentCall(fgPhone);
+                    mConnection = PhoneUtils.getConnection(fgPhone, mCall);
                     PhoneUtils.dumpCallState(fgPhone);
-                    cstate = call.getState();
-                    callDuration = c.getDurationMillis();
+                    cstate = mCall.getState();
+                    callDuration = mConnection.getDurationMillis();
+                } else if(cstate == Call.State.IDLE && mConnection != null) {
+                    if(mConnection != null) {
+                    	callDuration = mConnection.getDurationMillis();
+						mConnection = null;
+                    }
                 }
                 Intent phoneStateEvent = new Intent(ACTION_CALL_STATE_CHANGED);
                 phoneStateEvent.putExtra(EXTRA_TIMESTAMP, mTimestamp);

@@ -518,8 +518,8 @@ public class PhoneApp extends Application implements AccelerometerListener.Orien
             mPowerManagerService = IPowerManager.Stub.asInterface(
                     ServiceManager.getService("power"));
 
-            notifier = new CallNotifier(this, phone, ringer, mBtHandsfree, new CallLogAsync());
             preciseStateNotifier = new PreciseCallStateBroadcaster(this, mCM);
+            notifier = new CallNotifier(this, phone, ringer, mBtHandsfree, new CallLogAsync());
 
             // register for ICC status
             IccCard sim = phone.getIccCard();
