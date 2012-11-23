@@ -150,6 +150,7 @@ public class PhoneApp extends Application implements AccelerometerListener.Orien
     // directly (rather than thru set/get methods) for efficiency.
     Phone phone;
     CallNotifier notifier;
+    PreciseCallStateBroadcaster preciseStateNotifier;
     Ringer ringer;
     BluetoothHandsfree mBtHandsfree;
     PhoneInterfaceManager phoneMgr;
@@ -518,6 +519,7 @@ public class PhoneApp extends Application implements AccelerometerListener.Orien
                     ServiceManager.getService("power"));
 
             notifier = new CallNotifier(this, phone, ringer, mBtHandsfree, new CallLogAsync());
+            preciseStateNotifier = new PreciseCallStateBroadcaster(this, mCM);
 
             // register for ICC status
             IccCard sim = phone.getIccCard();
